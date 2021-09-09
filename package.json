@@ -1,0 +1,28 @@
+{
+  "name": "proxy-cache-server",
+  "description": "A simple proxy cache server for paragon stocks API",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Temiogundeji/proxy-cache-server.git"
+  },
+  "dependencies": {
+    "axios": "^0.21.4",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.12",
+    "redis": "^3.1.2"
+  },
+  "author": "temiogundeji",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Temiogundeji/proxy-cache-server/issues"
+  },
+  "homepage": "https://github.com/Temiogundeji/proxy-cache-server#readme"
+}
