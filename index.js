@@ -51,10 +51,7 @@ app.get('/api/stocks/details', (req, res) => {
       if (result) {
         const resultJSON = JSON.parse(result);
         console.log(result);
-        return res.status(200).send({
-            name:'data from redis',
-            resultJSON
-        });
+        return res.status(200).send(resultJSON);
       } else { 
         return axios.get(stockAPI.stockDetails(ticker))
           .then(response => {
@@ -78,7 +75,7 @@ app.get('/api/stocks/prevday_data', (req, res) => {
       if (result) {
         const resultJSON = JSON.parse(result);
         console.log(result);
-        return res.status(200).json(resultJSON);
+        return res.status(200).send(resultJSON);
       } else { 
         return axios.get(stockAPI.stockPrevDay(ticker))
           .then(response => {
