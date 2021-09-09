@@ -4,7 +4,7 @@ const app = express();
 const redis = require("redis");
 const logger = require('morgan');
 const axios = require("axios");
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8008;
 const stockAPI  = require('./api');
 // const stockRoutes = require('./routes');
 // const { getStocks } = require("./controller/stockController");
@@ -27,10 +27,7 @@ app.get('/api/stocks', (req, res) => {
       if (result) {
         const resultJSON = JSON.parse(result);
         console.log(result);
-        return res.status(200).json({
-            name:'data from redis',
-            resultJSON
-        });
+        return res.status(200).send(resultJSON);
       } else { 
         return axios.get(stockAPI.stocks)
           .then(response => {
@@ -54,7 +51,7 @@ app.get('/api/stocks/details', (req, res) => {
       if (result) {
         const resultJSON = JSON.parse(result);
         console.log(result);
-        return res.status(200).json({
+        return res.status(200).send({
             name:'data from redis',
             resultJSON
         });
@@ -81,10 +78,7 @@ app.get('/api/stocks/prevday_data', (req, res) => {
       if (result) {
         const resultJSON = JSON.parse(result);
         console.log(result);
-        return res.status(200).json({
-            name:'data from redis',
-            resultJSON
-        });
+        return res.status(200).json(resultJSON);
       } else { 
         return axios.get(stockAPI.stockPrevDay(ticker))
           .then(response => {
