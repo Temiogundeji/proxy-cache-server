@@ -6,8 +6,6 @@ const logger = require('morgan');
 const axios = require("axios");
 const PORT = process.env.PORT || 8008;
 const stockAPI  = require('./api');
-// const stockRoutes = require('./routes');
-// const { getStocks } = require("./controller/stockController");
 
 const client = redis.createClient({
     host: process.env.REDIS_HOSTNAME,
@@ -42,11 +40,23 @@ app.get('/api/stocks', (req, res) => {
     });
   });
   
+  
+// const cache = (req, res, next) => {
+//   client.get('stock_details', (error, result) => {
+//     if (error) throw error;
+//     if (result !== null) {
+//       return res.json(JSON.parse(result));
+//     } else {
+//       return next();
+//     }
+//   });
+// };
+
 // Get stock details
-app.get('/api/stocks/details', (req, res) => {
-    const { ticker } = req.query;
+app.get('/api/stocks/details', async(req, res) => {
+  const { ticker } = req.query;
     // Try fetching the result from Redis first in case we have it cached
-    return client.get('stock_details', (err, result) => {
+    return client.get(`stock_details : ${ticker}`, (err, result) => {
       // If that key exist in Redis store
       if (result) {
         const resultJSON = JSON.parse(result);
@@ -56,7 +66,7 @@ app.get('/api/stocks/details', (req, res) => {
         return axios.get(stockAPI.stockDetails(ticker))
           .then(response => {
             const responseJSON = response.data;
-            client.setex(`stock_details`, 60, JSON.stringify({ source: 'Redis Cache', ...responseJSON, }));
+            client.setex(`stock_details : ${ticker}`, 60, JSON.stringify({ source: 'Redis Cache', ...responseJSON, }));
             return res.status(200).json({ source: 'Polygon API', ...responseJSON, });
           })
           .catch(err => {
@@ -64,13 +74,13 @@ app.get('/api/stocks/details', (req, res) => {
           });
       }
     });
-  });
+});
 
   // Get previous day data
 app.get('/api/stocks/prevday_data', (req, res) => {
     const { ticker } = req.query;
     // Try fetching the result from Redis first in case we have it cached
-    return client.get('stock_prevday_data', (err, result) => {
+    return client.get(`stock_prevday_data : ${ticker}`, (err, result) => {
       // If that key exist in Redis store
       if (result) {
         const resultJSON = JSON.parse(result);
@@ -80,7 +90,7 @@ app.get('/api/stocks/prevday_data', (req, res) => {
         return axios.get(stockAPI.stockPrevDay(ticker))
           .then(response => {
             const responseJSON = response.data;
-            client.setex(`stock_prevday_data`, 60, JSON.stringify({ source: 'Redis Cache', ...responseJSON, }));
+            client.setex(`stock_prevday_data : ${ticker}`, 60, JSON.stringify({ source: 'Redis Cache', ...responseJSON, }));
             return res.status(200).json({ source: 'Polygon API', ...responseJSON, });
           })
           .catch(err => {
